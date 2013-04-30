@@ -1,0 +1,418 @@
+<!doctype html>
+<html>
+   	<head>
+	  	<style type="text/css">.mensaje{color:red;} </style>
+
+		<script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false"></script> 
+		<meta name="viewport" content="width=device-width, initial-scale=1"> 
+		<link rel="stylesheet" href="http://code.jquery.com/mobile/1.2.1/jquery.mobile-1.2.1.min.css" />
+		<script src="http://code.jquery.com/jquery-1.8.3.min.js"></script>
+		<script type="text/javascript">
+		$(document).bind("mobileinit", function(){
+		  $.mobile.defaultPageTransition = 'none';
+		  $.mobile.loader.prototype.options.text = "Cargando";
+		  $.mobile.loader.prototype.options.textVisible = true;
+		  $.mobile.loader.prototype.options.theme = "b";
+		  $.mobile.loader.prototype.options.html = "";
+		  $.mobile.orientationChangeEnabled = false;
+		  $.mobile.pageLoadErrorMessage = "No se pudo cargar";
+		});
+		</script>
+		<script src="http://code.jquery.com/mobile/1.2.1/jquery.mobile-1.2.1.min.js"></script>
+		<script type="text/javascript" src="cordova-2.3.0.js"></script>
+	  	<script type="text/javascript" src="{{ STATIC_URL }}CFDI/js/index.js"></script>
+   	</head>
+	<body>
+   		<div id="login" data-role="page">
+	        <div data-role="header" data-theme="c" data-position="fixed" ><h4>sign in</h4>
+			</div><!--end header-->
+		    <div data-role="content">
+		    	
+		    	<form id="formlogin" data-ajax="false"> 
+				    	<input type="text" name="username" id="username" value="" placeholder="usuario..." required="True"/>
+				    	<input type="password" name="password" id="password" value="" placeholder="contraseña..." required="True"/>
+				    	<a href="#" data-role="button" data-href="#inicio" >sign in</a><br>
+				    	<a href="#" data-role="button" onclick="" data-theme="b">Facebook Login</a>
+				    	<a href="#" data-role="button" onclick="" data-theme="b">twitter Login</a>
+			    </form>
+		    </div>  
+	    </div>
+
+
+	    <div id="inicio" data-role="page">
+	        <div data-role="header" data-theme="c" data-position="fixed" ><h4>Facturacion</h4>
+	        	<a href="#"  data-href="#login" data-role="button" data-theme="c"  data-icon="back" >
+	        		Sing out</a>
+		        <div data-role="navbar" >
+					<ul>
+						<li><a href="#" data-href="#inicio" class="ui-btn-active">Catalogos</a></li>
+						<li><a href="#" data-href="#Facturacion" >Facturacion</a></li>
+						<li><a href="#" data-href="#PuntoVenta" >Punto de Venta</a></li>
+					</ul>
+				</div>
+			</div><!--end header-->
+		    <div data-role="content">
+		    	
+	        		<ul data-role="listview" data-theme="d"  data-divider-theme="c" data-inset="true" data-filter="true" ><!--vista de listas-->
+	          			<li data-role="list-divider">Servicios</li><!--dividir -->
+	          			<li><a href="#" data-href="#FormularioLinea" >Catalago de Lineas</a></li>
+						<li><a href="#" data-href="#FormularioMonedas">Catalago de Monedas</a></li>
+						<li><a href="#" data-href="#FormularioPagos">Catalago Formas de Pago</a></li>
+						<li><a href="#" data-href="#FormularioUnidades">Catalago Unidades de Medida</a></li>
+						<li><a href="#" data-href="#FormularioBancos">Catalago de Bancos</a></li>
+						<li><a href="#" data-href="#FormularioProductos">Catalago Productos</a></li>
+						<li><a href="#" data-href="#FormularioClientes">Catalago Clientes</a></li>
+						<li><a href="#" data-href="#FormularioCuentaClientes">Catalago Cuenta Clientes</a></li>
+
+	        		</ul>
+		    </div>  
+	    </div>
+	    <div id="Facturacion" data-role="page">
+	        <div data-role="header" data-theme="c"  data-position="fixed">
+	        	<a href="#"  data-href="#login" data-role="button" data-theme="c"  data-icon="back" >
+	        		Sing out</a><h1>Facturacion electronica</h1>
+		        <div data-role="navbar">
+					<ul>
+						<li><a href="#" data-href="#inicio" >Catalogos</a></li>
+						<li><a href="#" data-href="#Facturacion" class="ui-btn-active">Facturacion</a></li>
+						<li><a href="#" data-href="#PuntoVenta" >PuntoVenta</a></li>
+					</ul>
+				</div>
+			</div><!--end header-->
+		    <div data-role="content">
+			    	<div data-role="popup"  class="ui-content" id="jaja">
+							<ul data-role="listview" data-filter="true"  data-filter-placeholder="Search Productos..." data-filter-theme="d" data-theme="d" data-divider-theme="d" class="ui-listview" id="element_list"><!--vista de listas-->	
+								<li data-role="list-divider">Productos <span></span></li><!--dividir -->
+								<div data-role="navbar">
+									<ul>
+										<li><button id="limpiar" >Limpiar</button></li>
+										<li><button id="calcular">Calcular</button></li>
+										<li><button id="cerrar" onclick="javascript:ajax.cerrar();">Cerrar</button></li>
+									</ul>
+								</div><!-- /navbar -->
+					        </ul> 
+					</div>
+	               <form id="formFacturas" data-ajax="false"> 
+						<input type="button" value="Agregar Productos" id="boton" />
+			    		<label for="CondicionPago" class="select">Tipo de Pago</label>
+						<select name="CondicionPago" id="CondicionPago" required="True">
+							<option value="C">Contado</option>
+	   						<option value="A">Credito</option>
+						</select>
+						<label for="CuentaPago" class="select">cuenta del Cliente</label>
+						<select name="CuentaPago" id="CuentaPago" required="True">
+							<option></option>
+						</select>
+						<label for="Moneda" class="select">Tipo de Moneda</label>
+						<select name="Moneda" id="Moneda" required="True">
+							<option></option>
+						</select>
+						<label for="FormaPago" class="select">Forma de Pago</label>
+						<select name="FormaPago" id="FormaPago" required="True">
+							<option></option>
+						</select>
+						<label for="Cliente" class="select">Cliente</label>
+						<select name="Cliente" id="Cliente" required="True">
+							<option></option>
+						</select>
+						<label for="RfcCliente">RFC del Cliente</label>
+						<input type="text" name="RfcCliente" id="RfcCliente" value="" placeholder="Rfc Cliente..." required="True"/>
+						
+						<input type="submit" value="Enviar Factura" data-theme="b"/>
+						<div class="ui-grid-a">
+							<div class="ui-block-a">
+								<h4 id="total">Total: </h4>
+							</div>
+							<div class="ui-block-b">Block B</div>
+						</div><!-- /grid-b -->
+
+			    </form>
+		    </div>  
+	    </div>
+	    <div id="PuntoVenta" data-role="page">
+	        <div data-role="header" data-theme="c"  data-position="fixed">
+	        	<a href="#"  data-href="#login" data-role="button" data-theme="c"  data-icon="back" >
+	        		Sing out</a>
+	        		<h1>Punto de venta</h1>
+		        <div data-role="navbar">
+					<ul>
+						<li><a href="#" data-href="#inicio" >Catalogos</a></li>
+						<li><a href="#" data-href="#Facturacion" >Facturacion</a></li>
+						<li><a href="#" data-href="#PuntoVenta" class="ui-btn-active" >PuntoVenta</a></li>
+					</ul>
+				</div>
+			</div><!--end header-->
+		    <div data-role="content">
+		   		<ul data-role="listview" data-filter="true"  data-filter-placeholder="Search Productos..." data-filter-theme="d" data-theme="d" data-divider-theme="d" class="ui-listview" id="enviarProdu" ><!--vista de listas-->	
+								<li data-role="list-divider">Productos <span></span></li><!--dividir -->
+								<div data-role="navbar">
+									<ul>
+										<li><button id="limpiar" >Limpiar</button></li>
+										<li><button id="Enviar" >Enviar</button></li>
+									</ul>
+								</div><!-- /navbar -->
+					        </ul> 
+		    </div>  
+	    </div>
+
+
+
+
+		<div id="viewlist" data-role="page" >     
+	    	<div data-role="header" data-theme="c"  data-position="fixed"><h1 id="titulo"></h1>    
+		         	<div data-role="navbar">
+						<ul>
+							<li><a href="#" id="regresar" data-href="" data-role="button" data-icon="back" data-theme="c">ATRAS</a></li>
+						</ul>
+					</div>
+            </div><!--end header-->
+		    <div data-role="content">
+				<ul data-role="listview" id="lisview" data-autodividers="true" data-theme="d" data-divider-theme="c" data-inset="true" data-filter="true"><!--vista de listas-->	
+		        </ul> 
+		    </div>
+		</div>
+
+
+
+
+
+
+	    <div id="FormularioLinea" data-role="page" >     
+	    	<div data-role="header" data-theme="c"  data-position="fixed"><h1>LINEA</h1>     	
+		         	<div data-role="navbar">
+						<ul>
+							<li><a href="#" data-href="#inicio" data-role="button" data-icon="back" data-theme="c">ATRAS</a></li>
+							<li><a href="#" data-href="#viewlist" onclick="javascript:ajax.gettipo('Linea');" >Ver Toda la linea</a></li>
+						</ul>
+					</div>
+            </div><!--end header-->
+		    <div data-role="content">
+				<div data-role="popup" id="popupBasic">
+				    <p></p>
+				</div>
+				<div class="result-count"></div>			
+			    <form id="formLinea" data-ajax="false"> 
+						<input type="text" autofocus="True" name="Descripcion" id="DescripcionLinea" value="" placeholder="Descripcion de Linea..." required="True"/>
+						<input type="submit" value="Agregar Linea" data-theme="b"/>
+			    </form>
+		    </div>
+		</div>
+		<div id="FormularioMonedas" data-role="page">     
+	    	<div data-role="header" data-theme="c"  data-position="fixed"><h1>MONEDAS</h1>    
+		         	<div data-role="navbar">
+						<ul>
+							<li><a href="#" data-href="#inicio" data-role="button" data-icon="back" data-theme="c">ATRAS</a></li>
+							<li><a href="#" data-href="#viewlist" onclick="javascript:ajax.gettipo('Moneda');" >Ver Toda las Monedas</a></li>
+						</ul>
+					</div>
+            </div><!--end header-->
+		    <div data-role="content">
+			    <form id="formMoneda" data-ajax="false"> 
+						<input type="text" autofocus="True" name="descripcion" id="DescripcionMoneda" value="" placeholder="Descripcion..." required="True"/>
+						<input type="number" name="paridad" id="paridad" value="" placeholder="Paridad de Peso..." required="True"/>
+						<input type="submit" value="Agregar Moneda" data-theme="b"/>
+			    </form>
+		    </div>
+		</div>
+		<div id="FormularioPagos" data-role="page">     
+	    	<div data-role="header" data-theme="c"  data-position="fixed"><h1>FORMAS DE PAGOS</h1>    
+		         	<div data-role="navbar">
+						<ul>
+							<li><a href="#" data-href="#inicio" data-role="button" data-icon="back" data-theme="c">ATRAS</a></li>
+							<li><a href="#" data-href="#viewlist" onclick="javascript:ajax.gettipo('Pagos');" >Ver Toda los Pagos</a></li>
+						</ul>
+					</div>
+            </div><!--end header-->
+		    <div data-role="content">
+			    <form id="formPago" data-ajax="false"> 
+						<input type="text" autofocus="True" name="descripcion" id="DescripcionPago" value="" placeholder="Descripcion..." required="True"/>
+						<input type="submit" value="Agregar Pago" data-theme="b"/>
+			    </form>
+		    </div>
+		</div>
+
+		<div id="FormularioUnidades" data-role="page">     
+	    	<div data-role="header" data-theme="c"  data-position="fixed"><h1>UNIDADES DE MEDIDA</h1>    
+		         	<div data-role="navbar">
+						<ul>
+							<li><a href="#" data-href="#inicio" data-role="button" data-icon="back" data-theme="c">ATRAS</a></li>
+							<li><a href="#" data-href="#viewlist" onclick="javascript:ajax.gettipo('Medida');" >Ver Toda los Pagos</a></li>
+						</ul>
+					</div>
+            </div><!--end header-->
+		    <div data-role="content">
+			    <form id="formMedida" data-ajax="false"> 
+						<input type="text" autofocus="True" name="descripcion" id="DescripcionMedida" value="" placeholder="Descripcion..." required="True"/>
+						<input type="submit" value="Agregar Medida" data-theme="b"/>
+			    </form>
+		    </div>
+		</div>
+
+		<div id="FormularioBancos" data-role="page">     
+	    	<div data-role="header" data-theme="c" data-position="fixed" ><h1>BANCOS</h1>    
+		         	<div data-role="navbar">
+						<ul>
+							<li><a href="#" data-href="#inicio" data-role="button" data-icon="back" data-theme="c">ATRAS</a></li>
+							<li><a href="#" data-href="#viewlist" onclick="javascript:ajax.gettipo('Bancos');" >Ver Toda los Pagos</a></li>
+						</ul>
+					</div>
+            </div><!--end header-->
+		    <div data-role="content">
+			    <form id="formBancos" data-ajax="false"> 
+						<input type="text" autofocus="True" name="descripcion" id="DescripcionBanco" value="" placeholder="Descripcion..." required="True"/>
+						<input type="text" name="direccion" id="direccion" value="" placeholder="direccion..." required="True"/>
+						<input type="text" name="ciudad" id="ciudad" value="" placeholder="ciudad..." required="True"/>
+						<br><hr><h4>Datos de Contacto</h4>
+						<input type="text" name="nombre" id="nombre" value="" placeholder="nombre..." required="True"/>
+						<input type="text" name="Puesto" id="Puesto" value="" placeholder="Puesto..." required="True"/>
+						<input type="Tel" name="telefono" id="telefono" value="" placeholder="telefono..." required="True"/>
+						<input type="Tel" name="fax" id="fax" value="" placeholder="fax..." required="True"/>
+						<input type="Email" name="Email" id="Email" value="" placeholder="Email..." required="True"/>
+						<input type="submit" value="Agregar Banco" data-theme="b"/>
+			    </form>
+		    </div>
+		</div>
+
+		<!--Este es el perron-->
+		<div id="FormularioEmpresa" data-role="page" data-position="fixed">     
+	    	<div data-role="header" data-theme="c"  data-position="fixed"><h1>EMPRESA</h1>    
+		         	<div data-role="navbar">
+						<ul>
+							<li><a href="#" data-href="#inicio" data-role="button" data-icon="back" data-theme="c">ATRAS</a></li>
+							<li><a href="#" data-href="#viewlist" onclick="javascript:ajax.gettipo('Empresa');" >Ver Toda los Pagos</a></li>
+						</ul>
+					</div>
+            </div><!--end header-->
+		    <div data-role="content">
+			    <form id="formEmpresa" data-ajax="false"> 
+						<input type="text" autofocus="True" name="RFC" id="RFC" value="" placeholder="RFC..." required="True"/>
+						<input type="text" name="curp" id="curp" value="" placeholder="curp..." required="True"/>
+						<input type="number" name="numeroInterno" id="numeroInterno" value="" placeholder="numero Interno..." required="True"/>
+						<input type="text" name="razonSocial" id="razonSocialEmpresa" value="" placeholder="razonSocial..." required="True"/>
+						<input type="text" name="nombreComercial" id="nombreComercial" value="" placeholder="nombre Comercial..." required="True"/>
+						<input type="text" name="calle" id="calle" value="" placeholder="calle..." required="True"/>
+						<input type="number" name="numeroExterior" id="numeroExterior" value="" placeholder="numero Exterior..."/>
+						<input type="number" name="numeroInterior" id="numeroInterior" value="" placeholder="numero Interior..."/>
+						<input type="number" name="codPostal" id="codPostal" value="" placeholder="Codigo Postal..." required="True"/>
+						<input type="text" name="colonia" id="colonia" value="" placeholder="colonia..." required="True"/>
+						<input type="text" name="localidad" id="localidad" value="" placeholder="localidad..." required="True"/>
+						<input type="text" name="municipio" id="municipio" value="" placeholder="municipio..." required="True"/>
+						<input type="text" name="Estado" id="Estado" value="" placeholder="Estado..." required="True"/>
+						<input type="text" name="Pais" id="Pais" value="" placeholder="Pais..." required="True"/>			
+						<br><hr><h4>Domicilio de Expedicion de Factura</h4>
+						<input type="text" name="CalleExp" id="CalleExp" value="" placeholder="Calle Exp..." required="True"/>
+						<input type="number" name="NumeroExteriorExp" id="NumeroExteriorExp" value="" placeholder="Numero Exterior Exp..." required="True"/>
+						<input type="number" name="NumeroInteriorExp" id="NumeroInteriorExp" value="" placeholder="Numero Interior Exp..." required="True"/>
+						<input type="number" name="CodigoPostalExp" id="CodigoPostalExp" value="" placeholder="Codigo Postal Exp..." required="True"/>
+						<input type="text" name="ColoniaExp" id="ColoniaExp" value="" placeholder="Colonia Exp..." required="True"/>
+						<input type="text" name="LocalidadExp" id="LocalidadExp" value="" placeholder="Localidad Exp..." required="True"/>
+						<input type="text" name="MunicipioExp" id="MunicipioExp" value="" placeholder="Municipio Exp..." required="True"/>
+						<input type="text" name="EstadoExp" id="EstadoExp" value="" placeholder="Estado Exp..." required="True"/>
+						<input type="text" name="PaisExp" id="PaisExp" value="" placeholder="Pais Exp..." required="True"/>
+						<br><hr><h4>Informacion de Contacto </h4><br>
+						<input type="Tel" name="telefono" id="telefonoContac" value="" placeholder="telefono..." required="True"/>
+						<input type="Tel" name="fax" id="faxContac" value="" placeholder="fax..." required="True"/>
+						<input type="Email" name="Email" id="EmailContac" value="" placeholder="Email..." required="True"/>
+						<input type="url" name="web" id="urlContac" value="" placeholder="Sitio Web..." required="True"/>
+						<input type="submit" value="Agregar Empresa" data-theme="b"/>
+			    </form>
+		    </div>
+		</div>
+		<div id="FormularioProductos" data-role="page">     
+	    	<div data-role="header" data-theme="c" data-position="fixed" ><h1>PRODUCTO</h1>    
+		         	<div data-role="navbar">
+						<ul>
+							<li><a href="#" data-href="#inicio" data-role="button" data-icon="back" data-theme="c">ATRAS</a></li>
+							<li><a href="#" data-href="#viewlist" onclick="javascript:ajax.gettipo('Producto');" >Ver Toda los Productos</a></li>
+						</ul>
+					</div>
+            </div><!--end header-->
+		    <div data-role="content">
+			    <form id="formProducto" data-ajax="false"> 
+						<input type="text" autofocus="True" name="Codigo" id="Codigo" value="" placeholder="Codigo..." required="True"/>
+						<input type="text" name="CodigoAlterno" id="CodigoAlterno" value="" placeholder="Codigo Alterno..." required="True"/>
+						<input type="text" name="Descripcion" id="DescripcionProduct" value="" placeholder="Descripcion..."required="True"/>
+						<input type="text" name="DescripcionLarga" id="DescripcionLarga" value="" placeholder="Descripcion Larga..."required="True"/>
+						
+						<input type="number" name="StockMinimo" id="StockMinimo" value="" placeholder="Stock Minimo..." required="True"/>
+						<input type="number" name="StockMaximo" id="StockMaximo" value="" placeholder="Stock Maximo..." required="True"/>
+						<input type="number" name="TasaIva" id="TasaIva" value="" placeholder="Tasa Iva..." required="True"/>
+						<input type="number" name="Precio" id="Precio" step="any" min="0" value="" placeholder="Precio del Producto..." required="True"/>
+						<br><hr><h4>Unidad de Medida</h4>
+						<select name="Unidadmedida" id="Unidadmedida" title="Unidad de medida..." required="True">
+							<option></option>
+						</select>
+						<a href="#" data-role="button" onclick="javascript:ajax.takePhoto();">Tomar una foto</a>
+						<input type="submit" value="Agregar Banco" data-theme="b"/>
+						<div id="picinfo"></div>
+						<div data-role="popup"  class="ui-content" id="ImgProd">
+							<img id="pic" />
+						</div>
+			    </form>
+		    </div>
+		</div>
+		<div id="FormularioClientes" data-role="page">     
+	    	<div data-role="header" data-theme="c" data-position="fixed" ><h1>CLIENTES</h1>    
+		         	<div data-role="navbar">
+						<ul>
+							<li><a href="#" data-href="#inicio" data-role="button" data-icon="back" data-theme="c">ATRAS</a></li>
+							<li><a href="#" data-href="#viewlist" onclick="javascript:ajax.gettipo('Cliente');" >Ver Todos los Clientes</a></li>
+						</ul>
+					</div>
+            </div><!--end header-->
+		    <div data-role="content">
+			    <form id="formCliente" data-ajax="false"> 
+						<input type="text" autofocus="True" name="RFC" id="RFCCliente" value="" placeholder="RFC..." required="True"/>
+						<input type="text" name="RazonSocial" id="RazonSocialCliente" value="" placeholder="Razon Social..." required="True"/>
+						<input type="text" name="Calle" id="CalleClienteCliente" value="" placeholder="Calle..."required="True"/>
+						<input type="number" name="NumeroExt" id="NumeroExtCliente" value="" placeholder="Numero Ext..."required="True"/>
+						<input type="number" name="NumeroInt" id="NumeroIntCliente" value="" placeholder="Numero Int..." required="True"/>
+						<input type="text" name="Colonia" id="ColoniaCliente" value="" placeholder="Colonia..." required="True"/>
+						<input type="number" name="CodigoPostal" id="CodigoPostalCliente" value="" placeholder="Codigo Postal..." required="True"/>
+						<input type="text" name="Localidad" id="LocalidadCliente" value="" placeholder="Localidad..." required="True"/>
+						<input type="text" name="Ciudad" id="CiudadCliente" value="" placeholder="Ciudad..." required="True"/>
+						<input type="text" name="Estado" id="EstadoCliente" value="" placeholder="Estado..." required="True"/>
+						<input type="text" name="Pais" id="PaisCliente" value="" placeholder="Pais..." required="True"/>
+						<label><input type="checkbox" name="checkbox-0" id="TieneCreditoCliente" /> Tiene Credito </label>
+						<input type="number" name="LimiteCredito" id="LimiteCreditoCliente" value="" placeholder="Limite Credito..." required="True"/>
+						<input type="number" name="PlazoDiasCredito" id="PlazoDiasCreditoCliente" value="" placeholder="Plazo Dias Credito..." required="True"/>
+						<input type="text" name="Telefono" id="TelefonoCliente" value="" placeholder="Telefono..." required="True"/>
+						<input type="tel" name="TelefonoFax" id="TelefonoFaxCliente" value="" placeholder="Telefono Fax..." />
+						<input type="tel" name="Telefono2" id="Telefono2Cliente" value="" placeholder="Telefono 2..." />
+						<input type="tel" name="Telefono3" id="Telefono3Cliente" value="" placeholder="Telefono 3..." />
+						<input type="email" name="CorreoElectronico" id="CorreoElectronicoCliente" value="" placeholder="Correo Electronico..."  required="True"/>
+						<input type="url" name="PaginaWeb" id="PaginaWebCliente" value="" placeholder="Pagina Web..." />
+						<input type="submit" value="Agregar Banco" data-theme="b"/>
+						
+			    </form>
+		    </div>
+		</div>
+		<div id="FormularioCuentaClientes" data-role="page">     
+	    	<div data-role="header" data-theme="c" data-position="fixed" ><h1>Cuenta Clientes</h1>    
+		         	<div data-role="navbar">
+						<ul>
+							<li><a href="#" data-href="#inicio" data-role="button" data-icon="back" data-theme="c">ATRAS</a></li>
+							<li><a href="#" data-href="#viewlist" onclick="javascript:ajax.gettipo('Cuenta');" >Ver Toda las cuentas</a></li>
+						</ul>
+					</div>
+            </div><!--end header-->
+		    <div data-role="content">
+			    <form id="formCuentaClientes" data-ajax="false"> 
+			    		<label>CuentaCliente</label>
+						<select name="CuentaCliente" autofocus="True" id="CuentaCliente" required="True">
+							<option></option>
+						</select>
+						<input type="text" name="NumeroCuentaCliente" id="NumeroCuentaCliente" value="" placeholder="Numero Cuenta Cliente..." required="True"/>
+						<label>Banco Cliente</label>
+						<select name="BancosCliente" id="BancosCliente" required="True">
+							<option></option>	
+						</select>
+						<input type="submit" value="Agregar Banco" data-theme="b"/>
+			    </form>
+		    </div>
+		</div>
+   	</body>   
+</html>
+
+
+
